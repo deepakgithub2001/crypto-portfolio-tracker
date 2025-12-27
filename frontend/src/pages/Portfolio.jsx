@@ -1,23 +1,34 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { apiFetch } from "../api/api";
+import { useEffect, useState } from "react";
+import { fetchPortfolio } from "../api/portfolio";
+import PortfolioSummary from "../components/portfolio/PortfolioSummary";
+import PortfolioTable from "../components/portfolio/PortfolioTable";
 
-function Portfolio() {
-  const navigate = useNavigate();
+const Portfolio = () => {
+  const [portfolio, setPortfolio] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    apiFetch("/portfolio")
-      .then((data) => console.log(data))
-      .catch(() => navigate("/login"));
+    fetchPortfolio()
+      .then((response) => {
+        setPortfolio(response.portfolio.portfolio);
+        setSummary(response.portfolio.summary);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
 
-  return <h1>My Portfolio</h1>;
-}
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (!summary) return <p className="text-center mt-10">No data</p>;
+
+  return (
+    <div className="max-w-5xl mx-auto px-6 py-8">
+      <h1 className="text-2xl font-bold mb-6">My Portfolio</h1>
+
+      <PortfolioSummary summary={summary} />
+      <PortfolioTable portfolio={portfolio} />
+    </div>
+  );
+};
 
 export default Portfolio;

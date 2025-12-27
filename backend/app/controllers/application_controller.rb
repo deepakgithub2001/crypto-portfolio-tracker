@@ -12,7 +12,7 @@ class ApplicationController < ActionController::API
 
     return unauthorized("Missing token") unless token
 
-    decoded = JwtService.decode(token) #decoded
+    decoded = JwtService.decode(token) 
     return unauthorized("Your token has been expired, please login again.") unless decoded
 
     user_id = decoded["user_id"] || decoded[:user_id]
