@@ -21,6 +21,7 @@ module Portfolio
         total_current  += current_value
 
         portfolio << {
+          id: holding.id,
           coin: holding.coin_id,
           quantity: holding.quantity,
           buy_price: holding.buy_price,

@@ -2,7 +2,7 @@
 class JwtService
   SECRET = Rails.application.secret_key_base
 
-  def self.encode(payload, exp = 2.minutes.from_now)
+  def self.encode(payload, exp = 24.hours.from_now)
     payload[:exp] = exp.to_i
     JWT.encode(payload, SECRET, "HS256")
   end
