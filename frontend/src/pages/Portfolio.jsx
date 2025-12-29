@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchPortfolio } from "../api/portfolio";
+import { apiFetch } from "../api/api";
 import PortfolioSummary from "../components/portfolio/PortfolioSummary";
 import PortfolioTable from "../components/portfolio/PortfolioTable";
 import Navbar from "../components/Navbar";
@@ -26,6 +27,22 @@ const Portfolio = () => {
     loadPortfolio();
   }, []);
 
+  const handleDelete = async (id) => {
+  if (!window.confirm("Delete this holding?")) return;
+
+  try {
+    await apiFetch(`/holdings/${id}`, {
+      method: "DELETE",
+    });
+
+    // reload portfolio after delete
+    loadPortfolio();
+  } catch (error) {
+    console.error(error);
+    alert("Failed to delete holding");
+  }
+};
+
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (!summary) return <p className="text-center mt-10">No data</p>;
 
@@ -40,7 +57,7 @@ const Portfolio = () => {
         <AddHolding onSuccess={loadPortfolio} />
 
         <PortfolioSummary summary={summary} />
-        <PortfolioTable portfolio={portfolio} />
+        <PortfolioTable portfolio={portfolio} onDelete={handleDelete} />
       </div>
     </>
   );

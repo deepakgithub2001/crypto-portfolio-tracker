@@ -1,4 +1,4 @@
-const PortfolioTable = ({ portfolio }) => {
+const PortfolioTable = ({ portfolio, onDelete }) => {
   return (
     <table border="1" cellPadding="10" width="100%">
       <thead>
@@ -8,22 +8,29 @@ const PortfolioTable = ({ portfolio }) => {
           <th>Buy Price</th>
           <th>Current Price</th>
           <th>Profit / Loss</th>
+          <th>Action</th>
         </tr>
       </thead>
 
       <tbody>
-        {portfolio.map((coin, index) => (
-          <tr key={index}>
+        {portfolio.map((coin) => (
+          <tr key={coin.id}>
             <td>{coin.coin}</td>
             <td>{coin.quantity}</td>
             <td>₹{coin.buy_price}</td>
             <td>₹{coin.current_price}</td>
             <td
-              style={{
-                color: coin.profit_loss >= 0 ? "green" : "red"
-              }}
+              style={{ color: coin.profit_loss >= 0 ? "green" : "red" }}
             >
               ₹{coin.profit_loss}
+            </td>
+            <td>
+              <button
+                onClick={() => onDelete(coin.id)}
+                className="text-red-600 hover:underline"
+              >
+                Delete
+              </button>
             </td>
           </tr>
         ))}

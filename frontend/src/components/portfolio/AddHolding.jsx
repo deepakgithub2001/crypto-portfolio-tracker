@@ -1,35 +1,36 @@
 import { useState } from "react";
-import { addHolding } from "../../api/portfolio";
+import { apiFetch } from "../../api/api";
 
-const AddHolding = ({ onSuccess }) => {
-  const [symbol, setSymbol] = useState("");
+const AddHolding = ({ onAdded }) => {
+  const [coin, setCoin] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [price, setPrice] = useState("");
+  const [buyPrice, setBuyPrice] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!symbol || !quantity || !price) return;
-
     setLoading(true);
-
     try {
-      await addHolding({
-        symbol: symbol.toUpperCase(),
-        quantity: Number(quantity),
-        price: Number(price),
+      await apiFetch("/portfolio", {
+        method: "POST",
+        body: JSON.stringify({
+          coin,
+          quantity: Number(quantity),
+          buy_price: Number(buyPrice),
+        }),
       });
 
-      // ✅ Clear form
-      setSymbol("");
+      // reset form
+      setCoin("");
       setQuantity("");
-      setPrice("");
+      setBuyPrice("");
 
-      // ✅ Refresh portfolio
-      onSuccess();
+      // tell parent to reload portfolio
+      onAdded();
     } catch (err) {
-      console.error("Failed to add holding", err);
+      console.error(err);
+      alert("Failed to add holding");
     } finally {
       setLoading(false);
     }
@@ -38,44 +39,43 @@ const AddHolding = ({ onSuccess }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white shadow rounded-lg p-4 mb-6 flex flex-wrap gap-4 items-end"
+      className="bg-white p-4 rounded shadow mb-6 flex gap-4 items-end"
     >
-      <div className="flex flex-col">
-        <label className="text-sm font-medium mb-1">Symbol</label>
+      <div>
+        <label className="block text-sm mb-1">Coin</label>
         <input
-          className="border rounded px-3 py-2 w-32"
-          placeholder="BTC"
-          value={symbol}
-          onChange={(e) => setSymbol(e.target.value)}
+          className="border px-3 py-2 rounded w-32"
+          value={coin}
+          onChange={(e) => setCoin(e.target.value)}
+          required
         />
       </div>
 
-      <div className="flex flex-col">
-        <label className="text-sm font-medium mb-1">Quantity</label>
+      <div>
+        <label className="block text-sm mb-1">Quantity</label>
         <input
           type="number"
-          step="any"
-          className="border rounded px-3 py-2 w-32"
+          className="border px-3 py-2 rounded w-32"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
+          required
         />
       </div>
 
-      <div className="flex flex-col">
-        <label className="text-sm font-medium mb-1">Buy Price</label>
+      <div>
+        <label className="block text-sm mb-1">Buy Price</label>
         <input
           type="number"
-          step="any"
-          className="border rounded px-3 py-2 w-32"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          className="border px-3 py-2 rounded w-32"
+          value={buyPrice}
+          onChange={(e) => setBuyPrice(e.target.value)}
+          required
         />
       </div>
 
       <button
-        type="submit"
         disabled={loading}
-        className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         {loading ? "Adding..." : "Add"}
       </button>
