@@ -10,6 +10,7 @@ const Portfolio = () => {
   const [portfolio, setPortfolio] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [editingHolding, setEditingHolding] = useState(null);
 
   const loadPortfolio = () => {
     setLoading(true);
@@ -57,7 +58,7 @@ const Portfolio = () => {
         <AddHolding onSuccess={loadPortfolio} />
 
         <PortfolioSummary summary={summary} />
-        <PortfolioTable portfolio={portfolio} onDelete={handleDelete} />
+        <PortfolioTable portfolio={portfolio} onDelete={handleDelete} onEdit={setEditingHolding} />
       </div>
     </>
   );

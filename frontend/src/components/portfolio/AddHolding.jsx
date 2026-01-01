@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { apiFetch } from "../../api/api";
 
-const AddHolding = ({ onAdded }) => {
+const AddHolding = ({ onSuccess }) => {
   const [coin, setCoin] = useState("");
   const [quantity, setQuantity] = useState("");
   const [buyPrice, setBuyPrice] = useState("");
@@ -29,7 +29,7 @@ const AddHolding = ({ onAdded }) => {
       setBuyPrice("");
 
       // tell parent to reload portfolio
-      onAdded();
+      onSuccess();
     } catch (err) {
       console.error(err);
       alert("Failed to add holding");

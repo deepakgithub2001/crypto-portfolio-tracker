@@ -26,9 +26,13 @@ const PortfolioTable = ({ portfolio, onDelete }) => {
             </td>
             <td>
               <button
+                onClick={() => onEdit(coin)}
+                className="text-yellow-600 hover:underline mx-2">
+                Edit
+              </button>
+              <button
                 onClick={() => onDelete(coin.id)}
-                className="text-red-600 hover:underline"
-              >
+                className="text-red-600 hover:underline">
                 Delete
               </button>
             </td>
