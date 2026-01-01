@@ -12,12 +12,14 @@ const AddHolding = ({ onAdded }) => {
 
     setLoading(true);
     try {
-      await apiFetch("/portfolio", {
+      await apiFetch("/holdings", {
         method: "POST",
         body: JSON.stringify({
-          coin,
+          holding: {
+          coin_id: coin,
           quantity: Number(quantity),
           buy_price: Number(buyPrice),
+        }
         }),
       });
 
