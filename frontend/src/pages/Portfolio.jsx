@@ -44,6 +44,14 @@ const Portfolio = () => {
   }
 };
 
+const handleEdit = (holding) => {
+  setEditingHolding(holding);
+};
+
+const handleCancelEdit = () => {
+  setEditingHolding(null);
+};
+
   if (loading) return <p className="text-center mt-10">Loading...</p>;
   if (!summary) return <p className="text-center mt-10">No data</p>;
 
@@ -55,10 +63,10 @@ const Portfolio = () => {
         <h1 className="text-2xl font-bold mb-6">My Portfolio</h1>
 
         {/* STEP 5: Add Holding */}
-        <AddHolding onSuccess={loadPortfolio} />
+        <AddHolding onSuccess={loadPortfolio} editingHolding={editingHolding} onCancelEdit={handleCancelEdit} />
 
         <PortfolioSummary summary={summary} />
-        <PortfolioTable portfolio={portfolio} onDelete={handleDelete} onEdit={setEditingHolding} />
+        <PortfolioTable portfolio={portfolio} onDelete={handleDelete} onEdit={handleEdit}  />
       </div>
     </>
   );

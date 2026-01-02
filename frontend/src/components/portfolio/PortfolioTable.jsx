@@ -1,4 +1,4 @@
-const PortfolioTable = ({ portfolio, onDelete }) => {
+const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
   return (
     <table border="1" cellPadding="10" width="100%">
       <thead>

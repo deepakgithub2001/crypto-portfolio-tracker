@@ -1,38 +1,60 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { apiFetch } from "../../api/api";
 
-const AddHolding = ({ onSuccess }) => {
+const AddHolding = ({ onSuccess, editingHolding, onCancelEdit }) => {
   const [coin, setCoin] = useState("");
   const [quantity, setQuantity] = useState("");
   const [buyPrice, setBuyPrice] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setLoading(true);
-    try {
-      await apiFetch("/holdings", {
-        method: "POST",
-        body: JSON.stringify({
-          holding: {
-          coin_id: coin,
-          quantity: Number(quantity),
-          buy_price: Number(buyPrice),
-        }
-        }),
-      });
-
-      // reset form
+  useEffect(() => {
+    if (editingHolding) {
+      setCoin(editingHolding.coin);
+      setQuantity(editingHolding.quantity);
+      setBuyPrice(editingHolding.buy_price);
+    } else {
+      // reset when edit is cancelled
       setCoin("");
       setQuantity("");
       setBuyPrice("");
+    }
+  }, [editingHolding]);
 
-      // tell parent to reload portfolio
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (editingHolding) {
+        // UPDATE
+        await apiFetch(`/holdings/${editingHolding.id}`, {
+          method: "PATCH",
+          body: JSON.stringify({
+            holding: {
+              quantity: Number(quantity),
+              buy_price: Number(buyPrice),
+            },
+          }),
+        });
+      } else {
+        // CREATE
+        await apiFetch("/holdings", {
+          method: "POST",
+          body: JSON.stringify({
+            holding: {
+              coin_id: coin,
+              quantity: Number(quantity),
+              buy_price: Number(buyPrice),
+            },
+          }),
+        });
+      }
+
       onSuccess();
+      onCancelEdit();
     } catch (err) {
       console.error(err);
-      alert("Failed to add holding");
+      alert("Failed to save holding");
     } finally {
       setLoading(false);
     }
@@ -49,6 +71,7 @@ const AddHolding = ({ onSuccess }) => {
           className="border px-3 py-2 rounded w-32"
           value={coin}
           onChange={(e) => setCoin(e.target.value)}
+          disabled={!!editingHolding}
           required
         />
       </div>
@@ -77,10 +100,20 @@ const AddHolding = ({ onSuccess }) => {
 
       <button
         disabled={loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        className="bg-blue-600 text-white px-4 py-2 rounded"
       >
-        {loading ? "Adding..." : "Add"}
+        {editingHolding ? "Update" : "Add"}
       </button>
+
+      {editingHolding && (
+        <button
+          type="button"
+          onClick={onCancelEdit}
+          className="bg-gray-400 text-white px-4 py-2 rounded"
+        >
+          Cancel
+        </button>
+      )}
     </form>
   );
 };
