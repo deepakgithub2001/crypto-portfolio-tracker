@@ -20,6 +20,14 @@ const SummaryCard = ({ label, value, highlight }) => {
       ? "text-red-600"
       : "text-gray-900";
 
+      if (!summary) {
+  return (
+    <div className="p-4 text-center text-gray-500">
+      No portfolio data available
+    </div>
+  );
+}
+
   return (
     <div className="border rounded-lg p-5 min-w-[160px] bg-white shadow-sm">
       <p className="text-sm text-gray-500">{label}</p>

@@ -5,12 +5,17 @@ import PortfolioSummary from "../components/portfolio/PortfolioSummary";
 import PortfolioTable from "../components/portfolio/PortfolioTable";
 import Navbar from "../components/Navbar";
 import AddHolding from "../components/portfolio/AddHolding";
+import { aggregateByCoin } from "../utils/aggregatePortfolio";
+import AllocationPie from "../components/portfolio/AllocationPie";
+import ProfitBar from "../components/portfolio/ProfitBar";
+import TopMovers from "../components/portfolio/TopMovers";
 
 const Portfolio = () => {
   const [portfolio, setPortfolio] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editingHolding, setEditingHolding] = useState(null);
+  const aggregatedData = aggregateByCoin(portfolio);
 
   const loadPortfolio = () => {
     setLoading(true);
@@ -67,6 +72,9 @@ const handleCancelEdit = () => {
 
         <PortfolioSummary summary={summary} />
         <PortfolioTable portfolio={portfolio} onDelete={handleDelete} onEdit={handleEdit}  />
+        <TopMovers data={aggregatedData} />
+        <AllocationPie data={aggregatedData} />
+        <ProfitBar data={aggregatedData} />
       </div>
     </>
   );
