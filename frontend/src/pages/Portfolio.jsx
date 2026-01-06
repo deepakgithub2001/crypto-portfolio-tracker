@@ -42,21 +42,34 @@ const Portfolio = () => {
 
   /* -------------------- WEBSOCKET (LIVE UPDATES) -------------------- */
 
+  // useEffect(() => {
+  //   const subscription = subscribeToPortfolio();
+
+  //   const handler = (event) => {
+  //     setPortfolio(event.detail.portfolio);
+  //     setSummary(event.detail.summary);
+  //   };
+
+  //   window.addEventListener("portfolio:update", handler);
+
+  //   return () => {
+  //     window.removeEventListener("portfolio:update", handler);
+  //     subscription.unsubscribe();
+  //   };
+  // }, []);
+
   useEffect(() => {
-    const subscription = subscribeToPortfolio();
+  const subscription = subscribeToPortfolio((data) => {
+    console.log("📡 Live update received", data);
 
-    const handler = (event) => {
-      setPortfolio(event.detail.portfolio);
-      setSummary(event.detail.summary);
-    };
+    setPortfolio(data.payload.portfolio);
+    setSummary(data.payload.summary);
+  });
 
-    window.addEventListener("portfolio:update", handler);
-
-    return () => {
-      window.removeEventListener("portfolio:update", handler);
-      subscription.unsubscribe();
-    };
-  }, []);
+  return () => {
+    subscription.unsubscribe();
+  };
+}, []);
 
   /* -------------------- ACTIONS -------------------- */
 
