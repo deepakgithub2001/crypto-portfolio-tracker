@@ -13,26 +13,52 @@ import AllocationPie from "../components/portfolio/AllocationPie";
 import ProfitBar from "../components/portfolio/ProfitBar";
 import TopMovers from "../components/portfolio/TopMovers";
 
+import { subscribeToPortfolio } from "../cable/portfolioChannel";
+
 const Portfolio = () => {
   const [portfolio, setPortfolio] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editingHolding, setEditingHolding] = useState(null);
 
-  const loadPortfolio = () => {
-    setLoading(true);
-    fetchPortfolio()
-      .then((response) => {
-        setPortfolio(response.portfolio.portfolio);
-        setSummary(response.portfolio.summary);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
+  /* -------------------- INITIAL LOAD -------------------- */
+
+  const loadPortfolio = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchPortfolio();
+      setPortfolio(response.portfolio.portfolio);
+      setSummary(response.portfolio.summary);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     loadPortfolio();
   }, []);
+
+  /* -------------------- WEBSOCKET (LIVE UPDATES) -------------------- */
+
+  useEffect(() => {
+    const subscription = subscribeToPortfolio();
+
+    const handler = (event) => {
+      setPortfolio(event.detail.portfolio);
+      setSummary(event.detail.summary);
+    };
+
+    window.addEventListener("portfolio:update", handler);
+
+    return () => {
+      window.removeEventListener("portfolio:update", handler);
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  /* -------------------- ACTIONS -------------------- */
 
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this holding?")) return;
@@ -40,7 +66,7 @@ const Portfolio = () => {
     try {
       setLoading(true);
       await apiFetch(`/holdings/${id}`, { method: "DELETE" });
-      loadPortfolio();
+      await loadPortfolio(); // temporary, ok for now
     } catch (error) {
       console.error(error);
       alert("Failed to delete holding");
