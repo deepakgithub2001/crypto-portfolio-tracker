@@ -21,9 +21,7 @@ function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-      // ✅ SAVE TOKEN
       localStorage.setItem("token", response.token);
-
       navigate("/portfolio");
     } catch (err) {
       setError("Invalid email or password");
@@ -33,39 +31,51 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm"
+        className="w-full max-w-sm bg-gray-900 border border-gray-800 rounded-xl p-8 shadow-lg"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        <h2 className="text-3xl font-bold text-center mb-6">
+          Welcome Back
+        </h2>
+
+        <p className="text-center text-gray-400 mb-8">
+          Login to track your crypto portfolio
+        </p>
 
         {error && (
-          <p className="text-red-600 text-sm mb-4 text-center">{error}</p>
+          <p className="text-red-500 text-sm mb-4 text-center">
+            {error}
+          </p>
         )}
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-4 p-2 border rounded focus:outline-none focus:ring"
-          required
-        />
+        <div className="mb-4">
+          <input
+            type="email"
+            placeholder="Email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+        </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-6 p-2 border rounded focus:outline-none focus:ring"
-          required
-        />
+        <div className="mb-6">
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+        </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Login"}
         </button>

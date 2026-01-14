@@ -7,12 +7,16 @@ const ProfitCell = ({ value, previous }) => {
 
   return (
     <td
-      className={`px-4 py-2 font-semibold transition-colors duration-500
-        ${isUp ? "bg-green-100 text-green-700" : ""}
-        ${isDown ? "bg-red-100 text-red-700" : ""}
+      className={`px-4 py-3 font-semibold transition-all duration-500
+        ${isUp ? "bg-green-900/40 text-green-400" : ""}
+        ${isDown ? "bg-red-900/40 text-red-400" : ""}
       `}
     >
-      ₹{value.toFixed(2)}
+      <div className="flex items-center gap-1">
+        {isUp && <span className="text-green-400">▲</span>}
+        {isDown && <span className="text-red-400">▼</span>}
+        ₹{value.toFixed(2)}
+      </div>
     </td>
   );
 };
@@ -22,58 +26,70 @@ const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
   const previousProfitRef = useRef({});
 
   return (
-    <table border="1" cellPadding="10" width="100%">
-      <thead>
-        <tr>
-          <th>Coin</th>
-          <th>Quantity</th>
-          <th>Buy Price</th>
-          <th>Current Price</th>
-          <th>Profit / Loss</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+    <div className="overflow-x-auto bg-gray-900 rounded-xl border border-gray-800 shadow">
+      <table className="min-w-full text-sm text-left">
+        <thead className="bg-gray-800 text-gray-300 uppercase text-xs">
+          <tr>
+            <th className="px-4 py-3">Coin</th>
+            <th className="px-4 py-3">Quantity</th>
+            <th className="px-4 py-3">Buy Price</th>
+            <th className="px-4 py-3">Current Price</th>
+            <th className="px-4 py-3">Profit / Loss</th>
+            <th className="px-4 py-3">Action</th>
+          </tr>
+        </thead>
 
-      <tbody>
-        {portfolio.map((coin) => {
-          const previousProfit =
-            previousProfitRef.current[coin.id] ?? null;
+        <tbody>
+          {portfolio.map((coin) => {
+            const previousProfit =
+              previousProfitRef.current[coin.id] ?? null;
 
-          // Store current profit for next render
-          previousProfitRef.current[coin.id] = coin.profit_loss;
+            // store current profit for next render
+            previousProfitRef.current[coin.id] = coin.profit_loss;
 
-          return (
-            <tr key={coin.id}>
-              <td>{coin.coin}</td>
-              <td>{coin.quantity}</td>
-              <td>₹{coin.buy_price}</td>
-              <td>₹{coin.current_price}</td>
+            return (
+              <tr
+                key={coin.id}
+                className="border-t border-gray-800 hover:bg-gray-800/50 transition"
+              >
+                <td className="px-4 py-3 font-medium text-white">
+                  {coin.coin}
+                </td>
+                <td className="px-4 py-3 text-gray-300">
+                  {coin.quantity}
+                </td>
+                <td className="px-4 py-3 text-gray-300">
+                  ₹{coin.buy_price}
+                </td>
+                <td className="px-4 py-3 text-gray-300">
+                  ₹{coin.current_price}
+                </td>
 
-              {/* 👇 THIS is the important change */}
-              <ProfitCell
-                value={coin.profit_loss}
-                previous={previousProfit}
-              />
+                <ProfitCell
+                  value={coin.profit_loss}
+                  previous={previousProfit}
+                />
 
-              <td>
-                <button
-                  onClick={() => onEdit(coin)}
-                  className="text-yellow-600 hover:underline mx-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => onDelete(coin.id)}
-                  className="text-red-600 hover:underline"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+                <td className="px-4 py-3">
+                  <button
+                    onClick={() => onEdit(coin)}
+                    className="text-yellow-400 hover:text-yellow-300 mr-4"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => onDelete(coin.id)}
+                    className="text-red-400 hover:text-red-300"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 };
 

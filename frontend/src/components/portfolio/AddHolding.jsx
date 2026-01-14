@@ -13,7 +13,6 @@ const AddHolding = ({ onSuccess, editingHolding, onCancelEdit }) => {
       setQuantity(editingHolding.quantity);
       setBuyPrice(editingHolding.buy_price);
     } else {
-      // reset when edit is cancelled
       setCoin("");
       setQuantity("");
       setBuyPrice("");
@@ -26,7 +25,6 @@ const AddHolding = ({ onSuccess, editingHolding, onCancelEdit }) => {
 
     try {
       if (editingHolding) {
-        // UPDATE
         await apiFetch(`/holdings/${editingHolding.id}`, {
           method: "PATCH",
           body: JSON.stringify({
@@ -37,7 +35,6 @@ const AddHolding = ({ onSuccess, editingHolding, onCancelEdit }) => {
           }),
         });
       } else {
-        // CREATE
         await apiFetch("/holdings", {
           method: "POST",
           body: JSON.stringify({
@@ -63,12 +60,22 @@ const AddHolding = ({ onSuccess, editingHolding, onCancelEdit }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-4 rounded shadow mb-6 flex gap-4 items-end"
+      className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6 shadow flex flex-wrap gap-4 items-end"
     >
+      {/* Header */}
+      <div className="w-full mb-2">
+        <h3 className="text-lg font-semibold text-white">
+          {editingHolding ? "✏️ Edit Holding" : "➕ Add New Holding"}
+        </h3>
+      </div>
+
+      {/* Coin */}
       <div>
-        <label className="block text-sm mb-1">Coin</label>
+        <label className="block text-sm text-gray-400 mb-1">Coin</label>
         <input
-          className="border px-3 py-2 rounded w-32"
+          className="bg-gray-800 border border-gray-700 px-3 py-2 rounded w-32
+                     text-white focus:outline-none focus:ring-2 focus:ring-blue-500
+                     disabled:opacity-60"
           value={coin}
           onChange={(e) => setCoin(e.target.value)}
           disabled={!!editingHolding}
@@ -76,40 +83,51 @@ const AddHolding = ({ onSuccess, editingHolding, onCancelEdit }) => {
         />
       </div>
 
+      {/* Quantity */}
       <div>
-        <label className="block text-sm mb-1">Quantity</label>
+        <label className="block text-sm text-gray-400 mb-1">Quantity</label>
         <input
           type="number"
-          className="border px-3 py-2 rounded w-32"
+          className="bg-gray-800 border border-gray-700 px-3 py-2 rounded w-32
+                     text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           required
         />
       </div>
 
+      {/* Buy Price */}
       <div>
-        <label className="block text-sm mb-1">Buy Price</label>
+        <label className="block text-sm text-gray-400 mb-1">Buy Price</label>
         <input
           type="number"
-          className="border px-3 py-2 rounded w-32"
+          className="bg-gray-800 border border-gray-700 px-3 py-2 rounded w-32
+                     text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={buyPrice}
           onChange={(e) => setBuyPrice(e.target.value)}
           required
         />
       </div>
 
+      {/* Submit */}
       <button
         disabled={loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
+        className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded
+                   transition disabled:opacity-50"
       >
-        {editingHolding ? "Update" : "Add"}
+        {loading
+          ? "Saving..."
+          : editingHolding
+          ? "Update Holding"
+          : "Add Holding"}
       </button>
 
+      {/* Cancel */}
       {editingHolding && (
         <button
           type="button"
           onClick={onCancelEdit}
-          className="bg-gray-400 text-white px-4 py-2 rounded"
+          className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded transition"
         >
           Cancel
         </button>

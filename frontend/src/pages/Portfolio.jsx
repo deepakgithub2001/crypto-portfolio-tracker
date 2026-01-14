@@ -40,36 +40,17 @@ const Portfolio = () => {
     loadPortfolio();
   }, []);
 
-  /* -------------------- WEBSOCKET (LIVE UPDATES) -------------------- */
-
-  // useEffect(() => {
-  //   const subscription = subscribeToPortfolio();
-
-  //   const handler = (event) => {
-  //     setPortfolio(event.detail.portfolio);
-  //     setSummary(event.detail.summary);
-  //   };
-
-  //   window.addEventListener("portfolio:update", handler);
-
-  //   return () => {
-  //     window.removeEventListener("portfolio:update", handler);
-  //     subscription.unsubscribe();
-  //   };
-  // }, []);
+  /* -------------------- LIVE UPDATES -------------------- */
 
   useEffect(() => {
-  const subscription = subscribeToPortfolio((data) => {
-    console.log("📡 Live update received", data);
+    const subscription = subscribeToPortfolio((data) => {
+      console.log("📡 Live update received", data);
+      setPortfolio(data.payload.portfolio);
+      setSummary(data.payload.summary);
+    });
 
-    setPortfolio(data.payload.portfolio);
-    setSummary(data.payload.summary);
-  });
-
-  return () => {
-    subscription.unsubscribe();
-  };
-}, []);
+    return () => subscription.unsubscribe();
+  }, []);
 
   /* -------------------- ACTIONS -------------------- */
 
@@ -79,7 +60,7 @@ const Portfolio = () => {
     try {
       setLoading(true);
       await apiFetch(`/holdings/${id}`, { method: "DELETE" });
-      await loadPortfolio(); // temporary, ok for now
+      await loadPortfolio();
     } catch (error) {
       console.error(error);
       alert("Failed to delete holding");
@@ -88,13 +69,8 @@ const Portfolio = () => {
     }
   };
 
-  const handleEdit = (holding) => {
-    setEditingHolding(holding);
-  };
-
-  const handleCancelEdit = () => {
-    setEditingHolding(null);
-  };
+  const handleEdit = (holding) => setEditingHolding(holding);
+  const handleCancelEdit = () => setEditingHolding(null);
 
   /* -------------------- STATES -------------------- */
 
@@ -106,12 +82,14 @@ const Portfolio = () => {
     return (
       <>
         <Navbar />
-        <div className="max-w-3xl mx-auto text-center mt-24 text-gray-600">
-          <h2 className="text-2xl font-semibold mb-2">
-            No holdings yet 📭
-          </h2>
-          <p>Add your first crypto to start tracking your portfolio.</p>
-          <div className="mt-6">
+        <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+          <div className="max-w-md text-center bg-gray-900 border border-gray-800 p-8 rounded-xl shadow-lg">
+            <h2 className="text-2xl font-semibold mb-3 text-white">
+              No holdings yet 📭
+            </h2>
+            <p className="text-gray-400 mb-6">
+              Add your first crypto to start tracking your portfolio.
+            </p>
             <AddHolding onSuccess={loadPortfolio} />
           </div>
         </div>
@@ -127,26 +105,41 @@ const Portfolio = () => {
     <>
       <Navbar />
 
-      <div className="max-w-5xl mx-auto px-6 py-8">
-        <h1 className="text-2xl font-bold mb-6">My Portfolio</h1>
+      <div className="min-h-screen bg-gray-950 text-white">
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-bold">My Portfolio</h1>
+            <span className="text-sm text-gray-400">
+              Live market updates enabled ⚡
+            </span>
+          </div>
 
-        <AddHolding
-          onSuccess={loadPortfolio}
-          editingHolding={editingHolding}
-          onCancelEdit={handleCancelEdit}
-        />
+          <div className="mb-6">
+            <AddHolding
+              onSuccess={loadPortfolio}
+              editingHolding={editingHolding}
+              onCancelEdit={handleCancelEdit}
+            />
+          </div>
 
-        <PortfolioSummary summary={summary} />
+          <div className="grid gap-6">
+            <PortfolioSummary summary={summary} />
+            <PortfolioTable
+              portfolio={portfolio}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+            />
+          </div>
 
-        <PortfolioTable
-          portfolio={portfolio}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-        />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <TopMovers data={aggregatedData} />
+            <AllocationPie data={aggregatedData} />
+          </div>
 
-        <TopMovers data={aggregatedData} />
-        <AllocationPie data={aggregatedData} />
-        <ProfitBar data={aggregatedData} />
+          <div className="mt-8">
+            <ProfitBar data={aggregatedData} />
+          </div>
+        </div>
       </div>
     </>
   );
