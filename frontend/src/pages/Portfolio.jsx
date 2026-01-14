@@ -21,7 +21,7 @@ const Portfolio = () => {
   const [loading, setLoading] = useState(true);
   const [editingHolding, setEditingHolding] = useState(null);
 
-  /* -------------------- INITIAL LOAD -------------------- */
+  /* -------------------- LOAD -------------------- */
 
   const loadPortfolio = async () => {
     try {
@@ -44,7 +44,6 @@ const Portfolio = () => {
 
   useEffect(() => {
     const subscription = subscribeToPortfolio((data) => {
-      console.log("📡 Live update received", data);
       setPortfolio(data.payload.portfolio);
       setSummary(data.payload.summary);
     });
@@ -61,8 +60,7 @@ const Portfolio = () => {
       setLoading(true);
       await apiFetch(`/holdings/${id}`, { method: "DELETE" });
       await loadPortfolio();
-    } catch (error) {
-      console.error(error);
+    } catch {
       alert("Failed to delete holding");
     } finally {
       setLoading(false);
@@ -83,9 +81,9 @@ const Portfolio = () => {
       <>
         <Navbar />
         <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-          <div className="max-w-md text-center bg-gray-900 border border-gray-800 p-8 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-semibold mb-3 text-white">
-              No holdings yet 📭
+          <div className="bg-gray-900 border border-gray-800 p-8 rounded-xl shadow-lg text-center max-w-md">
+            <h2 className="text-2xl font-semibold text-white mb-3">
+              No holdings yet
             </h2>
             <p className="text-gray-400 mb-6">
               Add your first crypto to start tracking your portfolio.
@@ -106,15 +104,18 @@ const Portfolio = () => {
       <Navbar />
 
       <div className="min-h-screen bg-gray-950 text-white">
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="flex items-center justify-between mb-8">
+        <div className="max-w-6xl mx-auto px-6 py-8 space-y-10">
+
+          {/* Header */}
+          <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold">My Portfolio</h1>
             <span className="text-sm text-gray-400">
-              Live market updates enabled ⚡
+              Live updates enabled
             </span>
           </div>
 
-          <div className="mb-6">
+          {/* Add Holding */}
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
             <AddHolding
               onSuccess={loadPortfolio}
               editingHolding={editingHolding}
@@ -122,23 +123,47 @@ const Portfolio = () => {
             />
           </div>
 
-          <div className="grid gap-6">
+          {/* Summary */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">
+              Portfolio Overview
+            </h2>
             <PortfolioSummary summary={summary} />
-            <PortfolioTable
-              portfolio={portfolio}
-              onDelete={handleDelete}
-              onEdit={handleEdit}
-            />
-          </div>
+          </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            <TopMovers data={aggregatedData} />
-            <AllocationPie data={aggregatedData} />
-          </div>
+          {/* Holdings */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">
+              Holdings
+            </h2>
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
+              <PortfolioTable
+                portfolio={portfolio}
+                onDelete={handleDelete}
+                onEdit={handleEdit}
+              />
+            </div>
+          </section>
 
-          <div className="mt-8">
+          {/* Insights */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">
+              Insights
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <TopMovers data={aggregatedData} />
+              <AllocationPie data={aggregatedData} />
+            </div>
+          </section>
+
+          {/* Performance */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">
+              Performance
+            </h2>
             <ProfitBar data={aggregatedData} />
-          </div>
+          </section>
+
         </div>
       </div>
     </>
