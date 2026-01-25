@@ -1,46 +1,23 @@
-import { useEffect, useState } from "react";
-import { subscribeToPrices } from "../cable/pricesChannel";
+import { Link } from "react-router-dom";
 
 const Home = () => {
-  const [prices, setPrices] = useState(null);
-
-  useEffect(() => {
-    const sub = subscribeToPrices((data) => {
-      console.log("📡 Price tick received:", data);
-      setPrices(data.prices); // ✅ IMPORTANT
-    });
-
-    return () => sub.unsubscribe();
-  }, []);
-
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-8">
-      <h1 className="text-3xl font-bold mb-6">
-        Live Crypto Prices ⚡
-      </h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white">
+      <div className="text-center max-w-md px-6">
+        <h1 className="text-3xl font-bold mb-4">
+          Crypto Portfolio Tracker
+        </h1>
 
-      {!prices ? (
-        <p className="text-gray-400">Waiting for live prices…</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {Object.entries(prices).map(([coin, data]) => (
-            <div
-              key={coin}
-              className="bg-gray-900 border border-gray-800 rounded-lg p-4"
-            >
-              <h3 className="text-lg font-semibold uppercase">
-                {coin}
-              </h3>
-              <p className="text-green-400 text-xl">
-                ₹{data.price}
-              </p>
-              <p className="text-sm text-gray-400">
-                Prev: ₹{data.previous_price}
-              </p>
-            </div>
-          ))}
-        </div>
-      )}
+        <p className="text-gray-400 mb-8">
+          Track your crypto investments in real-time.
+        </p>
+
+        <Link to="/login">
+          <button className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition">
+            Login
+          </button>
+        </Link>
+      </div>
     </div>
   );
 };
