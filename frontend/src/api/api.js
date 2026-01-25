@@ -1,19 +1,16 @@
-const API_BASE = "http://localhost:3000/api/v1";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const apiFetch = async (endpoint, options = {}) => {
-  const token = localStorage.getItem("token");
-
-  const response = await fetch(`${API_BASE}${endpoint}`, {
-    ...options,
+export const apiFetch = async (path, options = {}) => {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-      ...options.headers,
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
+    ...options,
   });
 
   if (!response.ok) {
-    throw new Error("API Error");
+    throw new Error("API error");
   }
 
   return response.json();
