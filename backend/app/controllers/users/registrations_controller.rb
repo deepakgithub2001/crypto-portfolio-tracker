@@ -1,8 +1,7 @@
 module Users
   class RegistrationsController < Devise::RegistrationsController
     respond_to :json
-    skip_before_action :verify_authenticity_token
-
+    skip_before_action :authenticate_request, only: [:create]
     def create
       user = User.new(sign_up_params)
       if user.save
