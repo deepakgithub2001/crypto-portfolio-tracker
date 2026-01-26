@@ -356,7 +356,7 @@ DEPENDENCIES
   dotenv-rails
   jwt
   kamal
-  pg (~> 1.1)
+  pg
   puma (>= 5.0)
   rack-cors
   rails (~> 8.0.3)
