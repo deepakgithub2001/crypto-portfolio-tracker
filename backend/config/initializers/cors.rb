@@ -1,9 +1,10 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'http://localhost:5173'  # your React dev server
-    resource '*',
+    origins "*"
+
+    resource "*",
       headers: :any,
-      methods: %i[get post put patch delete options head],
-      credentials: true
+      expose: ["Authorization"],
+      methods: %i[get post put patch delete options head]
   end
 end
