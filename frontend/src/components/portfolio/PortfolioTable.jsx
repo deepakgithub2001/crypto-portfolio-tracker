@@ -1,3 +1,4 @@
+import { usdFormatter } from "../../utils/currencyFormatter";
 import { useRef } from "react";
 
 /* ---------- Profit Cell ---------- */
@@ -15,7 +16,7 @@ const ProfitCell = ({ value, previous }) => {
       <div className="flex items-center gap-1">
         {isUp && <span className="text-green-400">▲</span>}
         {isDown && <span className="text-red-400">▼</span>}
-        ₹{value.toFixed(2)}
+        {usdFormatter.format(value)}
       </div>
     </td>
   );
@@ -59,10 +60,10 @@ const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
                   {coin.quantity}
                 </td>
                 <td className="px-4 py-3 text-gray-300">
-                  ₹{coin.buy_price}
+                  {usdFormatter.format(coin.buy_price)}
                 </td>
                 <td className="px-4 py-3 text-gray-300">
-                  ₹{coin.current_price}
+                  {usdFormatter.format(coin.current_price)}
                 </td>
 
                 <ProfitCell
