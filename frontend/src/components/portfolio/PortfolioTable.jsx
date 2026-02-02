@@ -1,6 +1,11 @@
 import { usdFormatter } from "../../utils/currencyFormatter";
 import { useRef } from "react";
 
+const calculateProfitPercent = (buyPrice, currentPrice) => {
+if (!buyPrice || buyPrice === 0) return 0;
+return ((currentPrice - buyPrice) / buyPrice) * 100;
+};
+
 /* ---------- Profit Cell ---------- */
 const ProfitCell = ({ value, previous }) => {
   const isUp = previous !== null && value > previous;
@@ -22,6 +27,23 @@ const ProfitCell = ({ value, previous }) => {
   );
 };
 
+const ProfitPercentCell = ({ value }) => {
+  const isUp = value > 0;
+  const isDown = value < 0;
+
+  return (
+    <td
+      className={`px-4 py-3 font-semibold
+        ${isUp ? "text-green-400" : ""}
+        ${isDown ? "text-red-400" : ""}
+      `}
+    >
+      {isUp && "+"}
+      {value.toFixed(2)}%
+    </td>
+  );
+};
+
 /* ---------- Portfolio Table ---------- */
 const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
   const previousProfitRef = useRef({});
@@ -36,6 +58,7 @@ const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
             <th className="px-4 py-3">Buy Price</th>
             <th className="px-4 py-3">Current Price</th>
             <th className="px-4 py-3">Profit / Loss</th>
+            <th className="px-4 py-3">Profit %</th>
             <th className="px-4 py-3">Action</th>
           </tr>
         </thead>
@@ -47,6 +70,8 @@ const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
 
             // store current profit for next render
             previousProfitRef.current[coin.id] = coin.profit_loss;
+
+            const profitPercent = calculateProfitPercent(coin.buy_price, coin.current_price);
 
             return (
               <tr
@@ -70,6 +95,8 @@ const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
                   value={coin.profit_loss}
                   previous={previousProfit}
                 />
+
+                <ProfitPercentCell value={profitPercent} />
 
                 <td className="px-4 py-3">
                   <button
