@@ -4,21 +4,35 @@ module Api
     class HoldingsController < ApplicationController
       before_action :authenticate_request
 
+      # ----------------------------------
       # GET /api/v1/holdings
+      # ----------------------------------
       def index
         holdings = current_user.holdings
 
-        serialized_holdings = holdings.map { |h| serialize_holding(h) }
+        coin_ids = holdings.pluck(:coin_id).map(&:downcase)
+        prices   = CoinGecko::Client.prices(coin_ids)
 
-        render json: {
-          portfolio: {
-            holdings: serialized_holdings,
-            summary: portfolio_summary(serialized_holdings)
+        data = holdings.map do |holding|
+          current_price = prices.dig(holding.coin_id.downcase, "usd") || 0
+          profit_loss   = (current_price - holding.buy_price) * holding.quantity
+
+          {
+            id: holding.id,
+            coin: holding.coin_id,
+            quantity: holding.quantity.to_f,
+            buy_price: holding.buy_price.to_f,
+            current_price: current_price.to_f,
+            profit_loss: profit_loss.to_f
           }
-        }
+        end
+
+        render json: data
       end
 
+      # ----------------------------------
       # POST /api/v1/holdings
+      # ----------------------------------
       def create
         holding = current_user.holdings.new(holding_params)
 
@@ -29,7 +43,9 @@ module Api
         end
       end
 
-      # PATCH/PUT /api/v1/holdings/:id
+      # ----------------------------------
+      # PATCH /api/v1/holdings/:id
+      # ----------------------------------
       def update
         holding = current_user.holdings.find(params[:id])
 
@@ -40,7 +56,9 @@ module Api
         end
       end
 
+      # ----------------------------------
       # DELETE /api/v1/holdings/:id
+      # ----------------------------------
       def destroy
         holding = current_user.holdings.find(params[:id])
         holding.destroy
@@ -50,35 +68,27 @@ module Api
 
       private
 
+      # ----------------------------------
+      # Strong Params
+      # ----------------------------------
       def holding_params
         params.require(:holding).permit(:coin_id, :quantity, :buy_price)
       end
 
-      # -------------------- NORMALIZATION --------------------
-
+      # ----------------------------------
+      # Serializer (for create/update)
+      # ----------------------------------
       def serialize_holding(holding)
-        current_price = holding.current_price || holding.buy_price
-
         invested_value = holding.quantity * holding.buy_price
-        current_value  = holding.quantity * current_price
 
         {
           id: holding.id,
           coin: holding.coin_id,
           quantity: holding.quantity,
           buy_price: holding.buy_price,
-          current_price: current_price,
           invested_value: invested_value,
-          current_value: current_value,
-          profit_loss: current_value - invested_value
-        }
-      end
-
-      def portfolio_summary(holdings)
-        {
-          invested: holdings.sum { |h| h[:invested_value] },
-          current: holdings.sum { |h| h[:current_value] },
-          profit_loss: holdings.sum { |h| h[:profit_loss] }
+          current_value: invested_value,
+          profit_loss: 0
         }
       end
     end
