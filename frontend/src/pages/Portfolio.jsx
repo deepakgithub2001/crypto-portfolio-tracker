@@ -23,24 +23,35 @@ const Portfolio = () => {
 
   /* -------------------- INITIAL LOAD -------------------- */
 
-  const loadPortfolio = async () => {
+  const loadPortfolio = async (showLoader = false) => {
     try {
-      setLoading(true);
+      if (showLoader) setLoading(true);
       const response = await fetchPortfolio();
       setPortfolio(response?.portfolio?.portfolio || []);
       setSummary(response?.portfolio?.summary || null);
     } catch (error) {
       console.error(error);
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadPortfolio();
+  loadPortfolio(true);
   }, []);
 
-  /* -------------------- LIVE UPDATES -------------------- */
+
+  /* -------------------- POLLING (every 30s) -------------------- */
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadPortfolio();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  /* -------------------- LIVE UPDATES (ActionCable) -------------------- */
 
   useEffect(() => {
     const subscription = subscribeToPortfolio((data) => {
@@ -61,7 +72,7 @@ const Portfolio = () => {
     try {
       setLoading(true);
       await apiFetch(`/holdings/${id}`, { method: "DELETE" });
-      await loadPortfolio();
+      await loadPortfolio(true);
     } catch {
       alert("Failed to delete holding");
     } finally {
