@@ -3,7 +3,8 @@ import SummaryCard from "./SummaryCard";
 const PortfolioSummary = ({ summary }) => {
   if (!summary) {
     return (
-      <div className="p-6 text-center text-gray-400 bg-gray-900 rounded-xl border border-gray-800 mb-6">
+      <div className="p-6 text-center text-gray-600 bg-white
+                      rounded-xl border border-gray-200 mb-6 shadow-sm">
         No portfolio data available
       </div>
     );
@@ -29,8 +30,8 @@ const PortfolioSummary = ({ summary }) => {
         highlight
         className={
           isProfit
-            ? "border-green-500 text-green-400"
-            : "border-red-500 text-red-400"
+            ? "border-green-400 text-green-600 bg-green-50"
+            : "border-red-400 text-red-600 bg-red-50"
         }
       />
     </div>

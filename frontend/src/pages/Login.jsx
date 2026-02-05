@@ -31,16 +31,16 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950 text-white">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <form
         onSubmit={handleLogin}
-        className="w-full max-w-sm bg-gray-900 border border-gray-800 rounded-xl p-8 shadow-lg"
+        className="w-full max-w-sm bg-white border border-gray-200 rounded-lg p-8 shadow-sm"
       >
-        <h2 className="text-3xl font-bold text-center mb-6">
+        <h2 className="text-2xl font-semibold text-center text-gray-900 mb-2">
           Welcome Back
         </h2>
 
-        <p className="text-center text-gray-400 mb-8">
+        <p className="text-center text-gray-600 mb-6">
           Login to track your crypto portfolio
         </p>
 
@@ -56,7 +56,8 @@ function Login() {
             placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
           />
         </div>
@@ -67,7 +68,8 @@ function Login() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md
+                       focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
           />
         </div>
@@ -75,7 +77,8 @@ function Login() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition disabled:opacity-50"
+          className="w-full py-3 bg-indigo-600 text-white rounded-md
+                     hover:bg-indigo-700 transition disabled:opacity-50"
         >
           {loading ? "Logging in..." : "Login"}
         </button>

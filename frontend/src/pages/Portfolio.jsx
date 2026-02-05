@@ -37,9 +37,8 @@ const Portfolio = () => {
   };
 
   useEffect(() => {
-  loadPortfolio(true);
+    loadPortfolio(true);
   }, []);
-
 
   /* -------------------- POLLING (every 30s) -------------------- */
 
@@ -93,12 +92,12 @@ const Portfolio = () => {
     return (
       <>
         <Navbar />
-        <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-          <div className="max-w-md text-center bg-gray-900 border border-gray-800 p-8 rounded-xl shadow-lg">
-            <h2 className="text-2xl font-semibold mb-3 text-white">
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+          <div className="max-w-md text-center bg-white border border-gray-200 p-8 rounded-lg shadow-sm">
+            <h2 className="text-2xl font-semibold mb-3 text-gray-900">
               No holdings yet 📭
             </h2>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-600 mb-6">
               Add your first crypto to start tracking your portfolio.
             </p>
             <AddHolding onSuccess={loadPortfolio} />
@@ -116,11 +115,11 @@ const Portfolio = () => {
     <>
       <Navbar />
 
-      <div className="min-h-screen bg-gray-950 text-white">
+      <div className="min-h-screen bg-gray-50 text-gray-900">
         <div className="max-w-6xl mx-auto px-6 py-8">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-3xl font-bold">My Portfolio</h1>
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-gray-500">
               Live market updates enabled ⚡
             </span>
           </div>

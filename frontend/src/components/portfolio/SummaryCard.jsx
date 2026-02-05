@@ -1,13 +1,22 @@
-const SummaryCard = ({ label, value, highlight, className = "" }) => {
+const SummaryCard = ({
+  label,
+  value,
+  highlight = false,
+  className = "",
+}) => {
   return (
     <div
-      className={`bg-gray-900 border border-gray-800 rounded-xl p-6 shadow
-                  ${highlight ? "font-semibold" : ""}
-                  ${className}`}
+      className={`p-6 rounded-xl border shadow-sm bg-white
+        ${highlight ? className : "border-gray-200"}
+      `}
     >
-      <p className="text-sm text-gray-400 mb-2">{label}</p>
+      {/* Label */}
+      <p className="text-sm text-gray-600 mb-1">
+        {label}
+      </p>
 
-      <p className="text-2xl text-white">
+      {/* Value */}
+      <p className="text-2xl font-bold">
         ₹{Number(value).toLocaleString()}
       </p>
     </div>

@@ -20,7 +20,6 @@ const ProfitCell = ({ value }) => {
 
     prevRef.current = value;
 
-    // remove highlight after animation
     const timer = setTimeout(() => setDirection(null), 800);
     return () => clearTimeout(timer);
   }, [value]);
@@ -28,8 +27,8 @@ const ProfitCell = ({ value }) => {
   return (
     <td
       className={`px-4 py-3 font-semibold transition-all duration-700
-        ${direction === "up" ? "bg-green-900/40 text-green-400" : ""}
-        ${direction === "down" ? "bg-red-900/40 text-red-400" : ""}
+        ${direction === "up" ? "bg-green-50 text-green-600" : ""}
+        ${direction === "down" ? "bg-red-50 text-red-600" : ""}
       `}
     >
       <div className="flex items-center gap-1">
@@ -49,8 +48,8 @@ const ProfitPercentCell = ({ value }) => {
   return (
     <td
       className={`px-4 py-3 font-semibold
-        ${isUp ? "text-green-400" : ""}
-        ${isDown ? "text-red-400" : ""}
+        ${isUp ? "text-green-600" : ""}
+        ${isDown ? "text-red-600" : ""}
       `}
     >
       {isUp && "+"}
@@ -62,9 +61,10 @@ const ProfitPercentCell = ({ value }) => {
 /* ---------- Portfolio Table ---------- */
 const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
   return (
-    <div className="overflow-x-auto bg-gray-900 rounded-xl border border-gray-800 shadow">
+    <div className="overflow-x-auto bg-white rounded-xl
+                    border border-gray-200 shadow-sm">
       <table className="min-w-full text-sm text-left">
-        <thead className="bg-gray-800 text-gray-300 uppercase text-xs">
+        <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
           <tr>
             <th className="px-4 py-3">Coin</th>
             <th className="px-4 py-3">Quantity</th>
@@ -86,21 +86,22 @@ const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
             return (
               <tr
                 key={coin.id}
-                className="border-t border-gray-800 hover:bg-gray-800/50 transition"
+                className="border-t border-gray-200
+                           hover:bg-gray-50 transition"
               >
-                <td className="px-4 py-3 font-medium text-white">
+                <td className="px-4 py-3 font-medium text-gray-900 uppercase">
                   {coin.coin}
                 </td>
 
-                <td className="px-4 py-3 text-gray-300">
+                <td className="px-4 py-3 text-gray-700">
                   {coin.quantity}
                 </td>
 
-                <td className="px-4 py-3 text-gray-300">
+                <td className="px-4 py-3 text-gray-700">
                   {usdFormatter.format(coin.buy_price)}
                 </td>
 
-                <td className="px-4 py-3 text-gray-300">
+                <td className="px-4 py-3 text-gray-700">
                   {usdFormatter.format(coin.current_price)}
                 </td>
 
@@ -108,16 +109,16 @@ const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
 
                 <ProfitPercentCell value={profitPercent} />
 
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 whitespace-nowrap">
                   <button
                     onClick={() => onEdit(coin)}
-                    className="text-yellow-400 hover:text-yellow-300 mr-4"
+                    className="text-yellow-600 hover:text-yellow-500 mr-4 font-medium"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => onDelete(coin.id)}
-                    className="text-red-400 hover:text-red-300"
+                    className="text-red-600 hover:text-red-500 font-medium"
                   >
                     Delete
                   </button>

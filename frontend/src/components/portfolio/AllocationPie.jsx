@@ -1,9 +1,17 @@
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import React from "react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
 const AllocationPie = ({ data }) => {
-  if (!data || data.length === 0) {
+  // Guard: invalid or empty data
+  if (!Array.isArray(data) || data.length === 0) {
     return (
       <div className="bg-white p-6 rounded shadow text-center text-gray-500">
         No allocation data available
@@ -11,9 +19,10 @@ const AllocationPie = ({ data }) => {
     );
   }
 
-  // keep only valid invested values
+  // Keep only valid invested values
   const validData = data.filter(
-    (d) => typeof d.invested === "number" && d.invested > 0
+    (item) =>
+      typeof item.invested === "number" && item.invested > 0
   );
 
   if (validData.length === 0) {
@@ -41,12 +50,15 @@ const AllocationPie = ({ data }) => {
           >
             {validData.map((_, index) => (
               <Cell
-                key={index}
+                key={`cell-${index}`}
                 fill={COLORS[index % COLORS.length]}
               />
             ))}
           </Pie>
-          <Tooltip />
+
+          <Tooltip
+            formatter={(value) => [`₹${value}`, "Invested"]}
+          />
         </PieChart>
       </ResponsiveContainer>
     </div>
