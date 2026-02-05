@@ -1,32 +1,47 @@
+import { useEffect, useRef, useState } from "react";
 import { usdFormatter } from "../../utils/currencyFormatter";
-import { useRef } from "react";
 
+/* ---------- Utils ---------- */
 const calculateProfitPercent = (buyPrice, currentPrice) => {
-if (!buyPrice || buyPrice === 0) return 0;
-return ((currentPrice - buyPrice) / buyPrice) * 100;
+  if (!buyPrice || buyPrice === 0) return 0;
+  return ((currentPrice - buyPrice) / buyPrice) * 100;
 };
 
-/* ---------- Profit Cell ---------- */
-const ProfitCell = ({ value, previous }) => {
-  const isUp = previous !== null && value > previous;
-  const isDown = previous !== null && value < previous;
+/* ---------- Profit Cell (with animation) ---------- */
+const ProfitCell = ({ value }) => {
+  const prevRef = useRef(null);
+  const [direction, setDirection] = useState(null); // "up" | "down" | null
+
+  useEffect(() => {
+    if (prevRef.current !== null) {
+      if (value > prevRef.current) setDirection("up");
+      else if (value < prevRef.current) setDirection("down");
+    }
+
+    prevRef.current = value;
+
+    // remove highlight after animation
+    const timer = setTimeout(() => setDirection(null), 800);
+    return () => clearTimeout(timer);
+  }, [value]);
 
   return (
     <td
-      className={`px-4 py-3 font-semibold transition-all duration-500
-        ${isUp ? "bg-green-900/40 text-green-400" : ""}
-        ${isDown ? "bg-red-900/40 text-red-400" : ""}
+      className={`px-4 py-3 font-semibold transition-all duration-700
+        ${direction === "up" ? "bg-green-900/40 text-green-400" : ""}
+        ${direction === "down" ? "bg-red-900/40 text-red-400" : ""}
       `}
     >
       <div className="flex items-center gap-1">
-        {isUp && <span className="text-green-400">▲</span>}
-        {isDown && <span className="text-red-400">▼</span>}
+        {direction === "up" && <span>▲</span>}
+        {direction === "down" && <span>▼</span>}
         {usdFormatter.format(value)}
       </div>
     </td>
   );
 };
 
+/* ---------- Profit % Cell ---------- */
 const ProfitPercentCell = ({ value }) => {
   const isUp = value > 0;
   const isDown = value < 0;
@@ -46,8 +61,6 @@ const ProfitPercentCell = ({ value }) => {
 
 /* ---------- Portfolio Table ---------- */
 const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
-  const previousProfitRef = useRef({});
-
   return (
     <div className="overflow-x-auto bg-gray-900 rounded-xl border border-gray-800 shadow">
       <table className="min-w-full text-sm text-left">
@@ -65,13 +78,10 @@ const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
 
         <tbody>
           {portfolio.map((coin) => {
-            const previousProfit =
-              previousProfitRef.current[coin.id] ?? null;
-
-            // store current profit for next render
-            previousProfitRef.current[coin.id] = coin.profit_loss;
-
-            const profitPercent = calculateProfitPercent(coin.buy_price, coin.current_price);
+            const profitPercent = calculateProfitPercent(
+              coin.buy_price,
+              coin.current_price
+            );
 
             return (
               <tr
@@ -81,20 +91,20 @@ const PortfolioTable = ({ portfolio, onDelete, onEdit }) => {
                 <td className="px-4 py-3 font-medium text-white">
                   {coin.coin}
                 </td>
+
                 <td className="px-4 py-3 text-gray-300">
                   {coin.quantity}
                 </td>
+
                 <td className="px-4 py-3 text-gray-300">
                   {usdFormatter.format(coin.buy_price)}
                 </td>
+
                 <td className="px-4 py-3 text-gray-300">
                   {usdFormatter.format(coin.current_price)}
                 </td>
 
-                <ProfitCell
-                  value={coin.profit_loss}
-                  previous={previousProfit}
-                />
+                <ProfitCell value={coin.profit_loss} />
 
                 <ProfitPercentCell value={profitPercent} />
 
